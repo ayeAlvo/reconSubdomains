@@ -15,7 +15,9 @@ printf "\n";
 # Reading entered domain
 printf "${cyan}${bold}Enter domain to enumerate subdomains:${clear} ${white}\n";
 read domain ;
+printf "\n";
 
+printf "${blue}[+] Starting...${clear} \n";
 # Creating directories for domain
 if [ ! -d "$domain" ];then
         mkdir $domain
@@ -36,22 +38,22 @@ enumSubfinder="$(cat $domain/subfinder.txt | wc -l)";
 printf "${purple} ✅ subfinder found: ${bold}$enumSubfinder${clear}${purple} saved in ${bold}$domain/subfinder.txt ${clear}\n";
 
 # Enumerate Cert.sh
-#printf "${blue}[+] Enumerating CERT.SH...\n";
 curl -s "https://crt.sh/?q=%25.$domain&output=json" | jq -r '.[].name_value' | sed 's/\*\.//g' | anew $domain/cert.txt > /dev/null;
 enumCert="$(cat $domain/cert.txt | wc -l)";
 printf "${purple} ✅ CERT.sh found: ${bold}$enumCert${clear}${purple} saved in ${bold}${purple}$domain/cert.txt ${clear} \n";
 
 # Combining results
-printf "${blue}${bold}[+] Combining all subdomains and saving to ${bold}$domain/domains.txt...${clear}\n";
+printf "${blue}${bold}[+] Combining all subdomains...${clear}\n";
 cat $domain/assetfinder.txt $domain/subfinder.txt $domain/amass.txt $domain/cert.txt | anew $domain/domains.txt > /dev/null;
 enumAllDomains="$(cat $domain/domains.txt | wc -l)"; 
-printf "${purple} ✅ Combining result: ${bold} $enumAllDomains${clear}${purple} saved in ${bold}$domain/domains.txt ${clear} \n";
+printf "${purple} ✅ Combining result: ${bold}$enumAllDomains${clear}${purple} saved in ${bold}$domain/domains.txt ${clear} \n";
 
 # Probe HTTP/HTTPS
 printf "${blue}${bold}[+] Enumerate httprobe...${clear}\n";
 cat $domain/domains.txt | httprobe > $domain/httpdomains.txt;
 enumProbe="$(cat $domain/httpdomains.txt | wc -l)";
-printf "${purple} ✅ httprobe result: ${bold}$enumProbe${clear} saved in ${bold}${purple}$domain/httpdomains.txt \n";
+printf "${purple} ✅ httprobe result: ${bold}$enumProbe${clear}${purple} saved in ${bold}$domain/httpdomains.txt \n";
+
 printf "\n";
 printf "${bold}${cyan} - Finalized Recongnition -${clear}\n";
 
