@@ -54,6 +54,14 @@ cat $domain/domains.txt | httprobe > $domain/httpdomains.txt;
 enumProbe="$(cat $domain/httpdomains.txt | wc -l)";
 printf "${purple} ✅ httprobe result: ${bold}$enumProbe${clear}${purple} saved in ${bold}$domain/httpdomains.txt \n";
 
+# Verify Response Code
+printf "${blue}[+] Verify response code...${cleaar}\n";
+cat $domain/httpdomains.txt | while read line; do
+        response=$(curl $line --write-out '%{response_code}' -L --head --silent --output /dev/null)
+                echo "$line response code: $response" >> $domain/withresponsecode.txt;
+done;
+sort $domain/withresponsecode.txt -k 4 -o $domain/withresponsecode.txt;
+printf "${purple} ✅ Done, saved in ${bold}$domain/withresponsecode.txt ${clear} \n";
+
 printf "\n";
 printf "${bold}${cyan} - Finalized Recongnition -${clear}\n";
-
